@@ -1,0 +1,20 @@
+[Unit]
+Description=gunicorn {app_name} daemon  {path_app}
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn/{app_name}.pid
+User={owner}
+Group={owner}
+RuntimeDirectory=gunicorn
+WorkingDirectory={path_app}
+ExecStartPre=chdir {path_app}
+ExecStart={path_env}/bin/gunicorn -b {hostname}:{django_port} --pid /run/gunicorn/{app_name}.pid  -w 5 --threads 5 --env DJANGO_DEBUG=False --env DJANGO_SETTINGS_MODULE=config.settings.development config.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
