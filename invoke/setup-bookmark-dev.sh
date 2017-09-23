@@ -11,6 +11,7 @@ export  HTTPD_PORT=80
 
 export  USER=webdev
 
+sudo ln -s  /usr/local/bin/python3 /usr/bin
 
 sudo /opt/$APP_NAME/setup/httpd-uninstall.sh
 
