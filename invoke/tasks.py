@@ -87,8 +87,11 @@ class AppRunner():
 
     def python(self, path_env, cmd):
 
-        self.runner.run(
-            '{0}/bin/python {1} '.format(path_env, cmd))
+        try:
+            self.runner.run(
+                '{0}/bin/python {1} '.format(path_env, cmd))
+        except:
+            pass
 
     def django_manage(self, path_env, path_app, cmd):
         path_manage = join(path_app, 'manage.py')
@@ -362,9 +365,16 @@ def install_django_src(ctx, template, env, git_repo,
     runner.pip(path_env, ' install --upgrade pip')
     runner.install_app_requirement(path_env, path_app, 'requirements.txt')
 
+    runner.chown(path_app, owner)
+    runner.chown(path_app_var, owner)
+    runner.chown(path_static, owner)
+    runner.run('chmod +x {0} '.format(os.path.join(
+        path_app_bin, '*.sh')))
+
     # django
     runner.django_make_migrations(path_env, path_app, 'applications.txt')
     path_manage = join(path_app, 'manage.py')
+
     runner.python(path_env, path_manage + ' migrate')
     runner.python(path_env, path_manage + ' loaddata initial_data')
     runner.python(path_env, path_manage + ' collectstatic --noinput')
